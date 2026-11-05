@@ -1,0 +1,115 @@
+{
+  "name": "IBM-PS22-Interview-Trainer-Agent",
+  "description": "IBM University Engagement Project — Problem Statement No. 22. An AI-powered Interview Trainer Agent using RAG (Retrieval-Augmented Generation) and IBM Granite (ibm/granite-4-h-small) on IBM watsonx.ai. Generates role-specific question sets, preparation strategies, answer evaluations, and adaptive mock interview sessions.",
+  "version": "2.0.0",
+  "problem_statement": "PS-22",
+  "domain": "AI / Agentic AI / Interview Preparation",
+  "tagline": "Practice Smarter. Answer Better. Get Interview Ready with AI.",
+
+  "author": {
+    "github": "https://github.com/kartik-malve/IBM-BOB-Project--Interview-Trainer-Agent"
+  },
+
+  "ibm_services": {
+    "watsonx_ai": {
+      "model": "ibm/granite-4-h-small",
+      "endpoint": "https://us-south.ml.cloud.ibm.com",
+      "api_path": "/ml/v1/text/chat",
+      "tier": "IBM Cloud Lite"
+    },
+    "vector_store": {
+      "engine": "ChromaDB",
+      "collection": "interview_knowledge_base",
+      "documents": 64,
+      "roles_covered": 10
+    }
+  },
+
+  "stack": {
+    "language": "Python 3.10+",
+    "framework": "FastAPI 0.110+",
+    "server": "Uvicorn",
+    "ai_client": "ibm-watsonx-ai >= 1.1.2",
+    "rag": "ChromaDB + LangChain + sentence-transformers",
+    "resume_parsing": "pypdf + NLP regex + IBM Granite AI summary"
+  },
+
+  "dependencies": {
+    "ibm-watsonx-ai": ">=1.1.2",
+    "ibm-cloud-sdk-core": ">=3.19.0",
+    "ibm-watson": ">=8.1.0",
+    "fastapi": ">=0.110.0",
+    "uvicorn": ">=0.29.0",
+    "python-dotenv": ">=1.0.0",
+    "pydantic": ">=2.6.0",
+    "pydantic-settings": ">=2.2.0",
+    "httpx": ">=0.27.0",
+    "chromadb": ">=0.4.24",
+    "langchain": ">=0.1.17",
+    "langchain-community": ">=0.0.37",
+    "langchain-ibm": ">=0.1.0",
+    "sentence-transformers": ">=2.7.0",
+    "pypdf": ">=4.0.0",
+    "python-multipart": ">=0.0.9",
+    "jinja2": ">=3.1.3",
+    "aiofiles": ">=23.2.1",
+    "numpy": ">=1.26.4",
+    "tiktoken": ">=0.7.0"
+  },
+
+  "env_variables": {
+    "IBM_WATSONX_API_KEY": "Your IBM watsonx.ai API key (required)",
+    "IBM_WATSONX_URL": "https://us-south.ml.cloud.ibm.com",
+    "IBM_WATSONX_PROJECT_ID": "Your watsonx.ai project ID (required)",
+    "IBM_GRANITE_MODEL_ID": "ibm/granite-4-h-small",
+    "IBM_GRANITE_MAX_TOKENS": "1024",
+    "IBM_GRANITE_TEMPERATURE": "0.7",
+    "IBM_GRANITE_TOP_P": "0.9",
+    "APP_HOST": "0.0.0.0",
+    "APP_PORT": "8000",
+    "APP_DEBUG": "false",
+    "CHROMA_DB_PATH": "./data/chroma_db",
+    "CHROMA_COLLECTION_NAME": "interview_knowledge_base",
+    "RAG_TOP_K_RESULTS": "5",
+    "RAG_CHUNK_SIZE": "512",
+    "RAG_CHUNK_OVERLAP": "64"
+  },
+
+  "endpoints": [
+    { "method": "GET",  "path": "/",                          "description": "Serve the main interview trainer UI (5-tab web app)" },
+    { "method": "GET",  "path": "/health",                    "description": "Health check — returns model, RAG doc count, config status" },
+    { "method": "POST", "path": "/api/questions",             "description": "Generate personalized question set with model answers and tips" },
+    { "method": "POST", "path": "/api/strategy",              "description": "Generate a 30-day role-specific preparation strategy" },
+    { "method": "POST", "path": "/api/evaluate",              "description": "Score and improve a candidate answer using IBM Granite" },
+    { "method": "POST", "path": "/api/mock/start",            "description": "Start an adaptive mock interview session — returns first question" },
+    { "method": "POST", "path": "/api/mock/answer",           "description": "Submit answer, receive feedback and next question" },
+    { "method": "GET",  "path": "/api/mock/report/{id}",      "description": "Get the full performance report for a completed session" },
+    { "method": "GET",  "path": "/api/mock/status/{id}",      "description": "Get current status of an active mock session" },
+    { "method": "POST", "path": "/api/parse-resume",          "description": "Parse pasted resume text into a structured candidate profile" },
+    { "method": "POST", "path": "/api/upload-resume",         "description": "Upload a resume file (PDF / DOCX / TXT) for parsing and RAG indexing" }
+  ],
+
+  "run": {
+    "install": "pip install -r requirements.txt",
+    "setup_env": "cp env.example .env  # then fill in IBM_WATSONX_API_KEY and IBM_WATSONX_PROJECT_ID",
+    "start": "python run.py",
+    "test": "pytest tests/ -v",
+    "docs": "http://localhost:8000/docs"
+  },
+
+  "files": {
+    "app/agent.py": "Core RAG + IBM Granite orchestrator",
+    "app/granite_client.py": "IBM watsonx.ai /text/chat HTTP client with 429 retry",
+    "app/rag_pipeline.py": "ChromaDB vector store — 64-document knowledge base across 10 roles",
+    "app/mock_interview.py": "Adaptive turn-by-turn mock interview engine",
+    "app/resume_parser.py": "NLP + AI resume parser (regex + Granite summary)",
+    "app/main.py": "FastAPI application — all 11 endpoints",
+    "app/config.py": "Pydantic settings — all environment variables",
+    "static/index.html": "Single-page UI with 5 tabs (Mock Interview, Questions, Strategy, Evaluator, Resume)",
+    "run.py": "Entry point with port-check and auto-fallback",
+    "requirements.txt": "All Python dependencies",
+    "env.example": "Safe credentials template (copy to .env)",
+    "tests/test_agent.py": "9 unit tests for core agent logic",
+    "Interview_Trainer_Agent_PS22.pptx": "Complete 16-slide project presentation"
+  }
+}
